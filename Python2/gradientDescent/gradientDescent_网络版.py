@@ -38,9 +38,12 @@ dataPath = "data.csv"
 dataSet = genfromtxt(dataPath, delimiter=',')
 trainData, trainLabel = getData(dataSet)
 m, n = np.shape(trainData)
+#theta = np.zeros(n)
 theta = np.ones(n)
-alpha = 0.1
-maxIteration = 5000
+
+alpha = 0.11
+maxIteration = 10000
 theta = batchGradientDescent(trainData, trainLabel, theta, alpha, m, maxIteration)
+print theta
 x = np.array([[3.1, 5.5], [3.3, 5.9], [3.5, 6.3], [3.7, 6.7], [3.9, 7.1]])
 print predict(x, theta)
