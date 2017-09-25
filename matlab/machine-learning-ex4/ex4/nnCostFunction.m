@@ -16,19 +16,116 @@ function [J grad] = nnCostFunction(nn_params, ...
 
 % Reshape nn_params back into the parameters Theta1 and Theta2, the weight matrices
 % for our 2 layer neural network
+
+
+
+
+
 Theta1 = reshape(nn_params(1:hidden_layer_size * (input_layer_size + 1)), ...
                  hidden_layer_size, (input_layer_size + 1));
 
 Theta2 = reshape(nn_params((1 + (hidden_layer_size * (input_layer_size + 1))):end), ...
                  num_labels, (hidden_layer_size + 1));
 
+%  w5 = size(Theta1)    
+%  w6 = size(Theta2)    
+%  w7 = input_layer_size   
+%  w8 = hidden_layer_size 
+%  w9 = num_labels  
+%  w10 = lambda
+   
+             
+             
+             
 % Setup some useful variables
 m = size(X, 1);
          
 % You need to return the following variables correctly 
-J = 0;
-Theta1_grad = zeros(size(Theta1));
-Theta2_grad = zeros(size(Theta2));
+X = [ones(m,1) X];
+
+Z2 = X * Theta1';
+a2_no_bias = sigmoid(Z2);
+a2 = [ones(m,1) a2_no_bias];
+
+Z3 = a2*Theta2';
+a3_no_bias = sigmoid(Z3);
+
+result = 0;
+for k = 1:num_labels
+    yk = (y==k);
+    loghx = log(a3_no_bias(:,k));
+    log1_hx = log(1-a3_no_bias(:,k));
+    
+    
+    r = 0;
+    for i = 1:m
+    
+        r = r + -yk(i)*loghx(i)-(1-yk(i))*log1_hx(i);
+               
+    end 
+    result = result + r;
+end
+
+
+sum_theta1 = sum(sum(Theta1(:,2:end).^2));
+sum_theta2 = sum(sum(Theta2(:,2:end).^2));
+
+
+
+J = result/m+lambda*(sum_theta1+sum_theta2)/(2*m);
+
+
+
+
+% Theta1_grad = zeros(size(Theta1))
+% Theta2_grad = zeros(size(Theta2))
+% size(Theta1)
+% size(Theta2)
+
+capital_delta1 = zeros(hidden_layer_size,input_layer_size+1); 
+capital_delta2 = zeros(num_labels,hidden_layer_size+1);
+
+for t = 1:m %????????????
+    g_a1 =  X(t,:);
+    
+    g_z2 = g_a1 *Theta1';
+    g_a2 = sigmoid(g_z2);
+    g_a2_bias = [1 g_a2];
+    
+    g_z3 = g_a2_bias*Theta2';
+    g_a3 = sigmoid(g_z3);
+    
+    yt = zeros(num_labels, 1);%yt???????
+    yt(y(t),1) = 1;
+    
+    
+    delta3 = g_a3' - yt;
+    
+    delta2 = (delta3'*Theta2).*(g_a2_bias.*(1-g_a2_bias));
+%todo ?????????????????????    
+%     w1=size(delta3)
+%     w2=size(g_a2_bias)
+%     w3 =size(delta2(2:end)')
+%     w4 =size(g_a1)
+    capital_delta2 = capital_delta2 + delta3*g_a2_bias;
+    capital_delta1 = capital_delta1 + delta2(2:end)'*g_a1;
+    
+    
+end
+capital_delta1(:,2:end) = capital_delta1(:,2:end)+lambda*Theta1(:,2:end);
+capital_delta2(:,2:end) = capital_delta2(:,2:end)+lambda*Theta2(:,2:end);
+
+grad = [capital_delta1(:);capital_delta2(:)];
+
+grad = grad/m;
+
+
+
+
+
+
+
+
 
 % ====================== YOUR CODE HERE ======================
 % Instructions: You should complete the code by working through the
@@ -85,7 +182,7 @@ Theta2_grad = zeros(size(Theta2));
 % =========================================================================
 
 % Unroll gradients
-grad = [Theta1_grad(:) ; Theta2_grad(:)];
+% grad = [Theta1_grad(:) ; Theta2_grad(:)];
 
 
 end
