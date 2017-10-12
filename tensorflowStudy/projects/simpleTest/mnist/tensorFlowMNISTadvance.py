@@ -1,6 +1,8 @@
-import tensorflow as tf
-import input_data
 import time
+
+import tensorflow as tf
+
+from mnist import input_data
 
 start_time = time.time()
 
@@ -29,14 +31,14 @@ def max_pool_2X2(x):
 x = tf.placeholder('float', shape=[None, 784])
 y_ = tf.placeholder('float', shape=[None, 10])
 
-W = tf.Variable(tf.zeros([784, 10]))
-b = tf.Variable(tf.zeros([10]))
-
-y = tf.nn.softmax(tf.matmul(x, W) + b)
-
-cross_entropy = -tf.reduce_sum(y_ * tf.log(y))
-
-train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
+# W = tf.Variable(tf.zeros([784, 10]))
+# b = tf.Variable(tf.zeros([10]))
+#
+# y = tf.nn.softmax(tf.matmul(x, W) + b)
+#
+# cross_entropy = -tf.reduce_sum(y_ * tf.log(y))
+#
+# train_step = tf.train.GradientDescentOptimizer(0.01).minimize(cross_entropy)
 
 W_conv1 = weight_variable([5, 5, 1, 32])
 b_conv1 = bias_variable([32])
